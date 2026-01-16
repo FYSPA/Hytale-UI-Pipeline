@@ -6,44 +6,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hytale Transpiler</title>
   <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+  <style>
+    /* Estilos para tabs en móvil */
+    .tab-button {
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-button.active {
+      border-bottom-color: #22c55e !important;
+      background-color: #1e1e1e !important;
+    }
+
+    .tab-content {
+      display: none !important;
+    }
+
+    .tab-content.active {
+      display: flex !important;
+    }
+  </style>
 </head>
 
 <body class="bg-black text-gray-200">
   <div id="app" class="flex flex-col h-screen overflow-hidden">
     <!-- Header Fijo -->
-    <header class="p-4 bg-[#1a1a1a] border-b border-green-500/30 flex-none">
-      <span class="font-bold text-green-500">HYTALE</span> UI PIPELINE V1
+    <header class="p-3 md:p-4 bg-[#1a1a1a] border-b border-green-500/30 flex-none">
+      <div class="flex items-center justify-between">
+        <h1 class="text-sm md:text-base">
+          <span class="font-bold text-green-500">HYTALE</span> UI PIPELINE V1
+        </h1>
+        <!-- Indicador de vista (solo visible en móvil) -->
+        <span class="text-xs text-gray-500 md:hidden" id="viewIndicator">HTML</span>
+      </div>
     </header>
 
+    <!-- Tabs para móvil (solo visible en pantallas pequeñas) -->
+    <nav class="flex md:hidden bg-[#252526] border-b border-gray-800 overflow-x-auto flex-none">
+      <button class="tab-button active text-xs whitespace-nowrap flex-1" data-tab="html">HTML</button>
+      <button class="tab-button text-xs whitespace-nowrap flex-1" data-tab="json">JSON</button>
+      <button class="tab-button text-xs whitespace-nowrap flex-1" data-tab="hytale">Hytale</button>
+      <button class="tab-button text-xs whitespace-nowrap flex-1" data-tab="preview">Preview</button>
+    </nav>
+
     <!-- Cuerpo Principal (Editores) -->
-    <main class="flex-1 grid grid-cols-3 gap-px bg-gray-800 overflow-hidden">
-      <!-- Columna HTML -->
-      <div class="flex flex-col bg-[#1e1e1e] min-w-0">
-        <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">1. HTML Input</label>
-        <div id="htmlEditor" class="flex-1"></div>
+    <main class="flex-1 overflow-hidden">
+      <!-- Vista Desktop: Grid de 3 columnas -->
+      <div class="hidden md:grid md:grid-cols-3 gap-px bg-gray-800 h-full">
+        <!-- Columna HTML -->
+        <div class="flex flex-col bg-[#1e1e1e] min-w-0">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">1. HTML Input</label>
+          <div id="htmlEditor" class="flex-1"></div>
+        </div>
+        <!-- Columna JSON -->
+        <div class="flex flex-col bg-[#1e1e1e] min-w-0 border-l border-gray-800">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">2. JSON Bridge</label>
+          <div id="jsonEditor" class="flex-1"></div>
+        </div>
+        <!-- Columna Hytale -->
+        <div class="flex flex-col bg-[#1e1e1e] min-w-0 border-l border-gray-800">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">3. Hytale Output</label>
+          <div id="hytaleEditor" class="flex-1"></div>
+        </div>
       </div>
 
-      <!-- Columna JSON -->
-      <div class="flex flex-col bg-[#1e1e1e] min-w-0 border-l border-gray-800">
-        <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">2. JSON Bridge</label>
-        <div id="jsonEditor" class="flex-1"></div>
-      </div>
-
-      <!-- Columna Hytale -->
-      <div class="flex flex-col bg-[#1e1e1e] min-w-0 border-l border-gray-800">
-        <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">3. Hytale Output</label>
-        <div id="hytaleEditor" class="flex-1"></div>
+      <!-- Vista Móvil: Tabs con contenido -->
+      <div class="md:hidden h-full">
+        <!-- Tab HTML -->
+        <div class="tab-content active flex flex-col bg-[#1e1e1e] h-full" data-content="html">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">1. HTML Input</label>
+          <div id="htmlEditorMobile" class="flex-1"></div>
+        </div>
+        <!-- Tab JSON -->
+        <div class="tab-content flex flex-col bg-[#1e1e1e] h-full" data-content="json">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">2. JSON Bridge</label>
+          <div id="jsonEditorMobile" class="flex-1"></div>
+        </div>
+        <!-- Tab Hytale -->
+        <div class="tab-content flex flex-col bg-[#1e1e1e] h-full" data-content="hytale">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">3. Hytale Output</label>
+          <div id="hytaleEditorMobile" class="flex-1"></div>
+        </div>
+        <!-- Tab Preview (solo móvil) -->
+        <div class="tab-content flex flex-col bg-[#1e1e1e] h-full" data-content="preview">
+          <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">Preview Visual</label>
+          <div id="visualContentMobile" class="flex-1 overflow-auto flex items-center justify-center p-4"></div>
+        </div>
       </div>
     </main>
 
-    <!-- Preview Inferior (Altura fija para evitar que se coma la pantalla) -->
-    <footer class="h-64 bg-[#121212] border-t border-gray-800 flex flex-col flex-none">
+    <!-- Preview Inferior (solo visible en desktop) -->
+    <footer class="hidden md:flex h-48 lg:h-64 bg-[#121212] border-t border-gray-800 flex-col flex-none">
       <label class="p-2 text-[10px] text-gray-500 uppercase border-b border-gray-800">Preview Visual</label>
       <div id="visualContent" class="flex-1 overflow-auto flex items-center justify-center p-4">
         <!-- Aquí cae el contenido -->
       </div>
     </footer>
   </div>
+
+  <script>
+    // Sistema de tabs para móvil
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const viewIndicator = document.getElementById('viewIndicator');
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          const tabName = button.dataset.tab;
+
+          // Actualizar botones activos
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+
+          // Actualizar contenidos activos
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+          });
+
+          const targetContent = document.querySelector(`[data-content="${tabName}"]`);
+          if (targetContent) {
+            targetContent.classList.add('active');
+          }
+
+          // Actualizar indicador
+          const labels = {
+            html: 'HTML',
+            json: 'JSON',
+            hytale: 'Hytale',
+            preview: 'Preview'
+          };
+          if (viewIndicator) {
+            viewIndicator.textContent = labels[tabName];
+          }
+
+          // Disparar evento para que Monaco se redimensione
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+            window.dispatchEvent(new Event('monaco-layout'));
+          }, 50);
+        });
+      });
+
+      // Forzar recarga al cambiar tamaño de ventana
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          window.dispatchEvent(new Event('monaco-layout'));
+        }, 100);
+      });
+    });
+  </script>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 
