@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hytale Transpiler</title>
+</head>
+
+<body class="bg-black text-gray-200">
+  <div id="app" class="flex flex-col h-screen overflow-hidden">
+    <!-- Header Fijo -->
+    <header class="p-4 bg-[#1a1a1a] border-b border-green-500/30 flex-none">
+      <span class="font-bold text-green-500">HYTALE</span> UI PIPELINE V1
+    </header>
+
+    <!-- Cuerpo Principal (Editores) -->
+    <main class="flex-1 grid grid-cols-3 gap-px bg-gray-800 overflow-hidden">
+      <!-- Columna HTML -->
+      <div class="flex flex-col bg-[#1e1e1e] min-w-0">
+        <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">1. HTML Input</label>
+        <div id="htmlEditor" class="flex-1"></div>
+      </div>
+
+      <!-- Columna JSON -->
+      <div class="flex flex-col bg-[#1e1e1e] min-w-0 border-l border-gray-800">
+        <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">2. JSON Bridge</label>
+        <div id="jsonEditor" class="flex-1"></div>
+      </div>
+
+      <!-- Columna Hytale -->
+      <div class="flex flex-col bg-[#1e1e1e] min-w-0 border-l border-gray-800">
+        <label class="p-2 text-[10px] text-gray-500 uppercase bg-[#252526]">3. Hytale Output</label>
+        <div id="hytaleEditor" class="flex-1"></div>
+      </div>
+    </main>
+
+    <!-- Preview Inferior (Altura fija para evitar que se coma la pantalla) -->
+    <footer class="h-64 bg-[#121212] border-t border-gray-800 flex flex-col flex-none">
+      <label class="p-2 text-[10px] text-gray-500 uppercase border-b border-gray-800">Preview Visual</label>
+      <div id="visualContent" class="flex-1 overflow-auto flex items-center justify-center p-4">
+        <!-- Aquí cae el contenido -->
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

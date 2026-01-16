@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos globales personalizados para tu herramienta de Hytale */
+body {
+    @apply bg-[#121212] text-gray-200 overflow-hidden;
+}
+
+/* Estilo para que los textareas se vean como editores de código */
+textarea {
+    @apply transition-colors duration-200 focus:border-green-500/50 outline-none;
+}
+
+/* Personalización del scrollbar (opcional para que se vea más pro) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
