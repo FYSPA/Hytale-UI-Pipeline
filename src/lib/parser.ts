@@ -10,23 +10,30 @@ export function htmlToJson(el: HTMLElement): HytaleNode {
         id: el.id || null
     };
 
-    // Filtrar estilos CSS inline
-    const style = el.style;
-    for (let i = 0; i < style.length; i++) {
-        const prop = style[i];
-        if (ALLOWED_PROPS[prop]) {
-            const key = ALLOWED_PROPS[prop];
-            let val = style.getPropertyValue(prop).replace('px', '').trim();
-            (node as any)[key] = val;
-        }
-    }
+    // Usamos el estilo inline directamente para evitar que el navegador meta ruido
+    const inlineStyle = el.style;
+    const computedStyle = window.getComputedStyle(el);
 
-    // Extraer texto
+    Object.keys(ALLOWED_PROPS).forEach(cssProp => {
+        const hytaleKey = ALLOWED_PROPS[cssProp];
+
+        // Prioridad absoluta a lo que el usuario escribe en el editor (inline)
+        let val = inlineStyle.getPropertyValue(cssProp);
+
+        // Solo usamos computedStyle para el ancho/alto si no están definidos
+        if (!val && (cssProp === 'width' || cssProp === 'height')) {
+            val = computedStyle.getPropertyValue(cssProp);
+        }
+
+        if (val && val !== 'initial' && val !== 'none' && val !== 'auto') {
+            (node as any)[hytaleKey] = val.replace('px', '').trim();
+        }
+    });
+
     if (type === "Label" || type === "TextButton") {
         node.text = el.innerText.trim();
     }
 
-    // Procesar hijos recursivamente
     if (el.children.length > 0) {
         node.children = Array.from(el.children).map(child => htmlToJson(child as HTMLElement));
     }
